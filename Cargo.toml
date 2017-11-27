@@ -5,3 +5,4 @@ authors = ["Philipp Hansch <dev@phansch.net>"]
 
 [dependencies]
 pancurses = "0.13"
+walkdir = "2"

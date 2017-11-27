@@ -1,40 +1,37 @@
 // NEXT: List lessons in middle of screen
 extern crate pancurses;
+extern crate walkdir;
 
-use std::fs::{read_dir, DirEntry};
-use std::path::PathBuf;
+use walkdir::{WalkDir};
 use pancurses::{initscr, endwin};
 
 fn main() {
     let window = initscr();
-    let greeting = format!("The following {} lessons are available:", lesson_count());
+    let greeting = format!("The following {} lessons are available: ", lesson_count());
 
     window.printw(&greeting);
 
     for path in lesson_list() {
-        window.printw(&path.into_os_string().into_string().unwrap());
+        window.printw(&path);
+        window.printw(" ");
     }
     window.refresh();
     window.getch();
     endwin();
 }
 
-fn lesson_count() -> usize {
-    // TODO: Handle errors correctly (files missing etc)
-    read_dir("lessons/").unwrap().count()
+fn lesson_dir() -> WalkDir {
+    WalkDir::new("./lessons/").min_depth(1)
 }
 
-// TODO:
-// Not sure if this is a good way to handle errors and still adhere to the function return type?
-// Are there better ways to do this?
-// Is walkdir overkill?
-fn lesson_list() -> Vec<std::path::PathBuf> {
-    let paths: Vec<std::path::PathBuf> = match read_dir("lessons/") {
-        Err(error) => {
-            println!("! {:?}", error.kind());
-            vec![PathBuf::new()]
-        },
-        Ok(paths) => paths.map(|path| path.unwrap().path()).collect(),
-    };
-    paths
+fn lesson_count() -> usize {
+    lesson_dir().into_iter().count()
+}
+
+fn lesson_list() -> Vec<String> {
+    lesson_dir()
+        .into_iter()
+        .filter_map(|f| f.ok())
+        .map(|f| f.path().file_stem().unwrap().to_str().unwrap().to_string())
+        .collect()
 }
