@@ -2,6 +2,9 @@ extern crate cursive;
 extern crate walkdir;
 extern crate rtypist;
 
+use std::io;
+use std::io::Write;
+use std::io::BufWriter;
 use walkdir::{WalkDir};
 use cursive::Cursive;
 use cursive::align::HAlign;
@@ -37,8 +40,12 @@ fn main() {
         .title(greeting),
     );
 
-    let lines = parser::lines();
-    let tokenized = parser::tokenize(lines);
+    let cleaned_lines = parser::cleanup(parser::read());
+    let mut writer = BufWriter::new(io::stdout());
+    for line in cleaned_lines {
+        writeln!(writer, "{}", line).unwrap();
+    }
+    // let tokenized = parser::tokenize(cleaned_lines);
     // siv.run();
 }
 
