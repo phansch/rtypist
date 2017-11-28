@@ -1,12 +1,14 @@
 extern crate cursive;
 extern crate walkdir;
+extern crate rtypist;
 
 use walkdir::{WalkDir};
 use cursive::Cursive;
 use cursive::align::HAlign;
 use cursive::event::EventResult;
 use cursive::traits::*;
-use cursive::views::{Dialog, OnEventView, SelectView, TextView};
+use cursive::views::{Dialog, OnEventView, SelectView};
+use rtypist::parser;
 
 fn main() {
     let mut siv = Cursive::new();
@@ -35,7 +37,9 @@ fn main() {
         .title(greeting),
     );
 
-    siv.run();
+    let lines = parser::lines();
+    let tokenized = parser::tokenize(lines);
+    // siv.run();
 }
 
 fn lesson_dir() -> WalkDir {
