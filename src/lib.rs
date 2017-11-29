@@ -12,7 +12,6 @@ pub enum Command {
 pub mod parser {
     use std::fs::File;
 
-    use std::io;
     use std::io::BufReader;
     use std::io::BufRead;
 
@@ -46,9 +45,12 @@ pub mod parser {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
-    fn it_turns_buf_reader_into_vector() {
-        let cursor = io::Cursor::new(b"lorem\nipsum");
-        rtypist::parser.lines(cursor)
+    fn cleanup_it_filters_out_empty_lines_and_comments() {
+        let lines = vec![String::from("# a"), String::from(""), String::from("abc")];
+        let empty_vec: Vec<String> = vec![String::from("abc")];
+        assert_eq!(parser::cleanup(lines), empty_vec)
     }
 }
