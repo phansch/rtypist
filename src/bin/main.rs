@@ -40,10 +40,10 @@ fn main() {
         .title(greeting),
     );
 
-    let cleaned_lines = parser::cleanup(parser::read());
+    let parsed = parser::parse("./lessons/q.typ");
     let mut writer = BufWriter::new(io::stdout());
-    for line in cleaned_lines {
-        writeln!(writer, "{}", line).unwrap();
+    for command in parsed {
+        writeln!(writer, "{:?}", command).unwrap();
     }
     // let tokenized = parser::tokenize(cleaned_lines);
     // siv.run();

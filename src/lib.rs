@@ -5,6 +5,8 @@
 // - B: Clears the whole screen and shows the command_data on top of the screen
 //      Maximum one line
 // - X: Exit gtypist
+#[derive(Debug)]
+#[derive(PartialEq)]
 pub enum Command {
     Banner(String),
 }
@@ -14,43 +16,44 @@ pub mod parser {
 
     use std::io::BufReader;
     use std::io::BufRead;
+    use Command;
 
-    pub fn read() -> Vec<String> {
-        let filename = "./lessons/q.typ";
-
-        let f = File::open(filename).expect("File does not exist");
-        BufReader::new(&f).lines().map(|l| l.unwrap()).collect()
+    pub fn parse(filename: &str) -> Vec<Command> {
+        let lines = read(filename);
+        tokenize(lines)
     }
 
-    /// Remove empty lines and comments from vector
-    pub fn cleanup(lines: Vec<String>) -> Vec<String> {
+    /// Turn file lines into collection of commands
+    pub fn tokenize(lines: Vec<String>) -> Vec<Command> {
         lines.into_iter().filter_map(|l| {
             match l.chars().next() {
                 Some('#') => None,
-                Some(_) => Some(l),
+                Some('B') => Some(Command::Banner(command_from_line(l))),
+                Some(_) => None,
                 None => None
             }
         }).collect()
     }
 
     /// Returns a tokenized version of the given collection.
-    pub fn tokenize(lines: Vec<String>) {
-
-        // TODO: Figure out a way to test this
-        for line in lines {
-            // writeln!(writer, "{}", line).unwrap();
-        }
+    fn command_from_line(line: String) -> String {
+        line.split(':').nth(1).unwrap().trim().to_string()
     }
-}
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+    fn read(filename: &str) -> Vec<String> {
+        let f = File::open(filename).expect("File does not exist");
+        BufReader::new(&f).lines().map(|l| l.unwrap()).collect()
+    }
 
-    #[test]
-    fn cleanup_it_filters_out_empty_lines_and_comments() {
-        let lines = vec![String::from("# a"), String::from(""), String::from("abc")];
-        let empty_vec: Vec<String> = vec![String::from("abc")];
-        assert_eq!(parser::cleanup(lines), empty_vec)
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_it_filters_out_empty_lines_and_comments() {
+            let lines = vec![String::from("# a"), String::from(""), String::from("B : test")];
+            let banner_vec = vec![Command::Banner(String::from("test"))];
+            assert_eq!(tokenize(lines), banner_vec)
+        }
     }
 }
