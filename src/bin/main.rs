@@ -10,7 +10,7 @@ use cursive::Cursive;
 use cursive::align::HAlign;
 use cursive::event::EventResult;
 use cursive::traits::*;
-use cursive::views::{Dialog, OnEventView, SelectView};
+use cursive::views::{Dialog, OnEventView, TextView, SelectView};
 use rtypist::parser;
 
 fn main() {
@@ -22,6 +22,7 @@ fn main() {
 
     let content = lesson_list();
     select.add_all_str(content);
+    select.set_on_submit(start_lesson);
 
     // Behave roughly like ncurses with key presses
     siv.add_global_callback('q', Cursive::quit);
@@ -40,13 +41,22 @@ fn main() {
         .title(greeting),
     );
 
+
     let parsed = parser::parse("./lessons/q.typ");
     let mut writer = BufWriter::new(io::stdout());
     for command in parsed {
         writeln!(writer, "{:?}", command).unwrap();
     }
     // let tokenized = parser::tokenize(cleaned_lines);
-    // siv.run();
+    siv.run();
+}
+
+fn start_lesson(siv: &mut Cursive, lesson: &str) {
+    siv.pop_layer();
+    let text = format!("You selected {}!", lesson);
+    siv.add_layer(
+        Dialog::around(TextView::new(text)).button("Quit", |s| s.quit()),
+    );
 }
 
 fn lesson_dir() -> WalkDir {
