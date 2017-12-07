@@ -4,11 +4,12 @@
 // 1. Blank lines and lines starting with '#', are ignored
 // - B: Clears the whole screen and shows the command_data on top of the screen
 //      Maximum one line
-// - X: Exit gtypist
+// - X: Exit gtypist (command_data is ignored)
 #[derive(Debug)]
 #[derive(PartialEq)]
 pub enum Command {
     Banner(String),
+    Exit(String)
 }
 
 pub mod parser {
@@ -29,6 +30,7 @@ pub mod parser {
             match l.chars().next() {
                 Some('#') => None,
                 Some('B') => Some(Command::Banner(command_from_line(l))),
+                Some('X') => Some(Command::Exit(command_from_line(l))),
                 Some(_) => None,
                 None => None
             }
@@ -51,9 +53,23 @@ pub mod parser {
 
         #[test]
         fn test_it_filters_out_empty_lines_and_comments() {
-            let lines = vec![String::from("# a"), String::from(""), String::from("B : test")];
-            let banner_vec = vec![Command::Banner(String::from("test"))];
-            assert_eq!(tokenize(lines), banner_vec)
+            let lines = vec![String::from("# a"), String::from("")];
+            let expected_vec = vec![];
+            assert_eq!(tokenize(lines), expected_vec)
+        }
+
+        #[test]
+        fn test_it_parses_command_banner() {
+            let lines = vec![String::from("B : test")];
+            let expected_vec = vec![Command::Banner(String::from("test"))];
+            assert_eq!(tokenize(lines), expected_vec)
+        }
+
+        #[test]
+        fn test_it_parses_command_exit() {
+            let lines = vec![String::from("# a"), String::from(""), String::from("X : ignored")];
+            let expected_vec = vec![Command::Exit(String::from("ignored"))];
+            assert_eq!(tokenize(lines), expected_vec)
         }
     }
 }
