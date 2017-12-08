@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: jimmycuadra/rust
+      - image: _/rust
     steps:
       - checkout
       - run: apt-get update
