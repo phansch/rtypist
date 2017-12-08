@@ -9,7 +9,7 @@ jobs:
       - run: apt-get update
       - run:
           name: Install ncurses-dev
-          command: apt-get install libncurses-dev
+          command: apt-get install libncurses-dev -y
       - run:
           name: Run cargo test
           command: cargo test
