@@ -1,0 +1,11 @@
+---
+version: 2
+jobs:
+  build:
+    docker:
+      - image: debian:stretch
+    steps:
+      - checkout
+      - run:
+          name: Install Rust and run cargo test
+          command: docker run -it --rm -v $(pwd)/platform/rust:/source jimmycuadra/rust cargo test
