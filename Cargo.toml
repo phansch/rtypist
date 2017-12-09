@@ -4,5 +4,9 @@ version = "0.1.0"
 authors = ["Philipp Hansch <dev@phansch.net>"]
 
 [dependencies]
+clippy = {version = "*", optional = true}
 walkdir = "2"
 cursive = "0.7"
+
+[features]
+default = []

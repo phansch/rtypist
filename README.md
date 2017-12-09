@@ -12,3 +12,16 @@ You will need the ncurses library installed.
 See [here](https://github.com/jeaye/ncurses-rs#building) for more information.
 
 Run `cargo build && cargo test && cargo run`.
+
+### Clippy
+
+Clippy is set up as an optional dependency because you will need the latest nightly for it to compile and run.
+
+Enable Clippy by running:
+
+    cargo build --features "clippy"
+
+Run clippy with the following two commands:
+
+    cargo rustc --bin main --features clippy -- -Z no-trans -Z extra-plugins=clippy
+    cargo rustc --lib --features clippy -- -Z no-trans -Z extra-plugins=clippy
