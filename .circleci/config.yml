@@ -17,4 +17,6 @@ jobs:
           command: cargo test
       - save_cache:
           key: cargo-cache
-          paths: ~/.cargo/
+          paths:
+            - ~/.cargo/
+            - target/
