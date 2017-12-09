@@ -53,8 +53,8 @@ fn main() {
 
 fn start_lesson(siv: &mut Cursive, lesson: &str) {
     siv.pop_layer();
-    // TODO: Load lesson using the lesson variable
-    let mut commands = parser::parse("./lessons/s.typ").into_iter();
+    let lesson_path = format!("./lessons/{}.typ", lesson);
+    let mut commands = parser::parse(lesson_path).into_iter();
 
     while let Some(command) = commands.next() {
         match command {

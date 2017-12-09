@@ -19,7 +19,7 @@ pub mod parser {
     use std::io::BufRead;
     use Command;
 
-    pub fn parse(filename: &str) -> Vec<Command> {
+    pub fn parse(filename: String) -> Vec<Command> {
         let lines = read(filename);
         tokenize(lines)
     }
@@ -40,7 +40,7 @@ pub mod parser {
         line.split(':').nth(1).unwrap().trim().to_string()
     }
 
-    fn read(filename: &str) -> Vec<String> {
+    fn read(filename: String) -> Vec<String> {
         let f = File::open(filename).expect("File does not exist");
         BufReader::new(&f).lines().map(|l| l.unwrap()).collect()
     }
