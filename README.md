@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/phansch/rtypist.svg?branch=master)](https://travis-ci.org/phansch/rtypist)
+[![CircleCI](https://circleci.com/gh/phansch/rtypist/tree/master.svg?style=svg)](https://circleci.com/gh/phansch/rtypist/tree/master)
 
 # Rtypist
 
