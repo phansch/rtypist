@@ -3,9 +3,20 @@ version: 2
 jobs:
   build:
     docker:
-      - image: debian:stretch
+      - image: library/rust
     steps:
       - checkout
+      - run: apt-get update
       - run:
-          name: Install Rust and run cargo test
-          command: docker run -it --rm -v $(pwd)/platform/rust:/source jimmycuadra/rust cargo test
+          name: Install ncurses-dev
+          command: apt-get install libncurses-dev -y
+      - restore_cache:
+          key: cargo-cache
+      - run:
+          name: Run cargo test
+          command: cargo test
+      - save_cache:
+          key: cargo-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
+          paths:
+            - ~/.cargo/
+            - target/
