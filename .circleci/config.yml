@@ -16,7 +16,7 @@ jobs:
           name: Run cargo test
           command: cargo test
       - save_cache:
-          key: cargo-cache
+          key: cargo-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
           paths:
             - ~/.cargo/
             - target/
