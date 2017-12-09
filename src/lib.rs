@@ -28,11 +28,9 @@ pub mod parser {
     pub fn tokenize(lines: Vec<String>) -> Vec<Command> {
         lines.into_iter().filter_map(|l| {
             match l.chars().next() {
-                Some('#') => None,
                 Some('B') => Some(Command::Banner(command_from_line(l))),
                 Some('X') => Some(Command::Exit(command_from_line(l))),
-                Some(_) => None,
-                None => None
+                Some('#') | Some(_) | None => None,
             }
         }).collect()
     }
