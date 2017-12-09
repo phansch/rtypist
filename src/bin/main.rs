@@ -12,6 +12,8 @@ use cursive::event::EventResult;
 use cursive::traits::*;
 use cursive::views::{Dialog, OnEventView, TextView, SelectView};
 use rtypist::parser;
+use rtypist::Command;
+use std::process;
 
 fn main() {
     let mut siv = Cursive::new();
@@ -42,21 +44,28 @@ fn main() {
     );
 
 
-    let parsed = parser::parse("./lessons/q.typ");
-    let mut writer = BufWriter::new(io::stdout());
-    for command in parsed {
-        writeln!(writer, "{:?}", command).unwrap();
-    }
-    // let tokenized = parser::tokenize(cleaned_lines);
+    // let mut writer = BufWriter::new(io::stdout());
+    // for command in parsed {
+    //     writeln!(writer, "{:?}", command).unwrap();
+    // }
     siv.run();
 }
 
 fn start_lesson(siv: &mut Cursive, lesson: &str) {
     siv.pop_layer();
-    let text = format!("You selected {}!", lesson);
-    siv.add_layer(
-        Dialog::around(TextView::new(text)).button("Quit", |s| s.quit()),
-    );
+    // TODO: Load lesson using the lesson variable
+    let mut commands = parser::parse("./lessons/s.typ").into_iter();
+
+    while let Some(command) = commands.next() {
+        match command {
+            Command::Banner(text) => {
+                siv.add_layer(
+                    Dialog::around(TextView::new(text)).button("Quit", |s| s.quit()),
+                )
+            }
+            _ => process::exit(1)
+        }
+    }
 }
 
 fn lesson_dir() -> WalkDir {
