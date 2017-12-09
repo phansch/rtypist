@@ -10,6 +10,11 @@ jobs:
       - run:
           name: Install ncurses-dev
           command: apt-get install libncurses-dev -y
+      - restore_cache:
+          key: cargo-cache
       - run:
           name: Run cargo test
           command: cargo test
+      - save_cache:
+          key: cargo-cache
+          paths: ~/.cargo/
