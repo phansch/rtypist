@@ -10,7 +10,10 @@ use cursive::Cursive;
 use cursive::align::HAlign;
 use cursive::event::EventResult;
 use cursive::traits::*;
-use cursive::views::{Dialog, OnEventView, TextView, SelectView};
+use cursive::Printer;
+use cursive::views::{Canvas, Dialog, OnEventView, SelectView};
+use cursive::view::Boxable;
+use cursive::theme::ColorStyle;
 use rtypist::parser;
 use rtypist::Command;
 use std::process;
@@ -59,13 +62,21 @@ fn start_lesson(siv: &mut Cursive, lesson: &str) {
     while let Some(command) = commands.next() {
         match command {
             Command::Banner(text) => {
-                siv.add_layer(
-                    Dialog::around(TextView::new(text)).button("Quit", |s| s.quit()),
+                let canvas = Canvas::new(())
+                    .with_draw(draw);
+                siv.add_fullscreen_layer(
+                    canvas
                 )
             }
             _ => process::exit(1)
         }
     }
+}
+
+fn draw(_: &(), p: &Printer) {
+    p.with_color(ColorStyle::Highlight, |printer| {
+        printer.print((0, 0), "some text");
+    });
 }
 
 fn lesson_dir() -> WalkDir {
