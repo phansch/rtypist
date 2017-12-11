@@ -62,10 +62,8 @@ fn start_lesson(siv: &mut Cursive, lesson: &str) {
     while let Some(command) = commands.next() {
         match command {
             Command::Banner(text) => {
-                let canvas = Canvas::new(())
-                    .with_draw(draw);
                 siv.add_fullscreen_layer(
-                    canvas
+                    BannerView::new(text).full_width()
                 )
             }
             _ => process::exit(1)
@@ -73,10 +71,22 @@ fn start_lesson(siv: &mut Cursive, lesson: &str) {
     }
 }
 
-fn draw(_: &(), p: &Printer) {
-    p.with_color(ColorStyle::Highlight, |printer| {
-        printer.print((0, 0), "some text");
-    });
+struct BannerView {
+    text: String
+}
+
+impl BannerView {
+    fn new(text: String) -> Self {
+        BannerView {
+            text: text
+        }
+    }
+}
+
+impl View for BannerView {
+    fn draw(&self, printer: &Printer) {
+        printer.print((0, 0), &self.text);
+    }
 }
 
 fn lesson_dir() -> WalkDir {
