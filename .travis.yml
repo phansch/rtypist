@@ -14,7 +14,7 @@ matrix:
 
 branches:
   only:
-    # - master
+    - master
     - staging
     - trying
 
