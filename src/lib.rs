@@ -1,3 +1,11 @@
+#[macro_use]
+extern crate nom;
+
+use std::fs::File;
+use std::io::BufReader;
+use std::io::Read;
+use nom::*;
+
 // Mini gtypist script language reference:
 // command_char : command_data
 //
@@ -12,62 +20,64 @@ pub enum Command {
     Exit(String)
 }
 
-pub mod parser {
-    use std::fs::File;
+named!(banner<&str, Command>,
+    do_parse!(
+        tag!("B:")               >>
+        space0                   >>
+        value: take_until_and_consume!("\n") >>
+        (Command::Banner(value.to_string()))
+    )
+);
 
-    use std::io::BufReader;
-    use std::io::BufRead;
-    use Command;
+named!(exit<&str, Command>,
+    do_parse!(
+        tag!("X:")               >>
+        space0                   >>
+        value: take_until_and_consume!("\n") >>
+        (Command::Exit(value.to_string()))
+    )
+);
 
-    pub fn parse(filename: String) -> Vec<Command> {
-        let lines = read(filename);
-        tokenize(lines)
+named!(parse<&str, Vec<Command>>,
+    many0!(
+        complete!(
+            alt!(
+                banner |
+                exit
+            )
+        )
+    )
+);
+
+pub fn parse_str(input: &str) -> Result<Vec<Command>, String> {
+    match parse(input) {
+        Ok(result) => Ok(result.1),
+        Err(e) => Err(format!("Something went wrong! {:?}", e))
     }
+}
 
-    /// Turn file lines into collection of commands
-    pub fn tokenize(lines: Vec<String>) -> Vec<Command> {
-        lines.into_iter().filter_map(|l| {
-            match l.chars().next() {
-                Some('B') => Some(Command::Banner(command_from_line(l))),
-                Some('X') => Some(Command::Exit(command_from_line(l))),
-                Some('#') | Some(_) | None => None,
-            }
-        }).collect()
-    }
+pub fn parse_file(filename: String) -> Vec<Command> {
+    let f = File::open(filename).expect("File does not exist");
+    let mut string = String::new();
+    BufReader::new(&f).read_to_string(&mut string);
+    parse_str(&string).unwrap()
+}
 
-    /// Returns a tokenized version of the given collection.
-    fn command_from_line(line: String) -> String {
-        line.split(':').nth(1).unwrap().trim().to_string()
-    }
+#[test]
+fn test_banner_parse() {
+    let result = banner("B: Lesson 1: uh\n");
+    assert_eq!(result, Ok(("", Command::Banner("Lesson 1: uh".to_string()))));
+}
 
-    fn read(filename: String) -> Vec<String> {
-        let f = File::open(filename).expect("File does not exist");
-        BufReader::new(&f).lines().map(|l| l.unwrap()).collect()
-    }
-
-    #[cfg(test)]
-    mod tests {
-        use super::*;
-
-        #[test]
-        fn test_it_filters_out_empty_lines_and_comments() {
-            let lines = vec![String::from("# a"), String::from("")];
-            let expected_vec = vec![];
-            assert_eq!(tokenize(lines), expected_vec)
-        }
-
-        #[test]
-        fn test_it_parses_command_banner() {
-            let lines = vec![String::from("B : test")];
-            let expected_vec = vec![Command::Banner(String::from("test"))];
-            assert_eq!(tokenize(lines), expected_vec)
-        }
-
-        #[test]
-        fn test_it_parses_command_exit() {
-            let lines = vec![String::from("# a"), String::from(""), String::from("X : ignored")];
-            let expected_vec = vec![Command::Exit(String::from("ignored"))];
-            assert_eq!(tokenize(lines), expected_vec)
-        }
-    }
+#[test]
+fn test_parse_str() {
+    let result = parse_str("B: Lesson 1: uh\nB: Lesson 2: um\nX: ignored\n");
+    assert_eq!(result, Ok(
+            vec![
+                Command::Banner("Lesson 1: uh".to_string()),
+                Command::Banner("Lesson 2: um".to_string()),
+                Command::Exit("ignored".to_string())
+            ]
+        )
+    );
 }

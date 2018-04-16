@@ -14,7 +14,7 @@ use cursive::Printer;
 use cursive::views::{Canvas, Dialog, OnEventView, SelectView};
 use cursive::view::Boxable;
 use cursive::theme::ColorStyle;
-use rtypist::parser;
+use rtypist::parse_file;
 use rtypist::Command;
 use std::process;
 
@@ -57,7 +57,7 @@ fn main() {
 fn start_lesson(siv: &mut Cursive, lesson: &str) {
     siv.pop_layer();
     let lesson_path = format!("./lessons/{}.typ", lesson);
-    let mut commands = parser::parse(lesson_path).into_iter();
+    let mut commands = parse_file(lesson_path).into_iter();
 
     while let Some(command) = commands.next() {
         match command {
