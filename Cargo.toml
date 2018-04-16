@@ -6,7 +6,7 @@ authors = ["Philipp Hansch <dev@phansch.net>"]
 [dependencies]
 clippy = {version = "*", optional = true}
 walkdir = "2"
-cursive = "0.7"
+cursive = "0.8"
 
 [features]
 default = []
