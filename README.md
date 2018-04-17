@@ -5,13 +5,15 @@
 
 A re-implementation of GNUtypist in Rust.. at some point.
 
+I'm still learning Rust, so code may not be as good as it can be. I'm also using this project as a sort of playground for now so things may change quickly.
+
 
 ## Development
 
 You will need the ncurses library installed.
 See [here](https://github.com/gyscos/Cursive/wiki/Install-ncurses) for more information.
 
-Run `cargo build && cargo test && cargo run`.
+Run `cargo build && cargo test && cargo run` and you should be prompted to select a lesson.
 
 ### Clippy
 
