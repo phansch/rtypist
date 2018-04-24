@@ -10,8 +10,13 @@ use cursive::Cursive;
 use cursive::align::HAlign;
 use cursive::event::EventResult;
 use cursive::traits::*;
-use cursive::views::{Dialog, OnEventView, TextView, SelectView};
-use rtypist::parser;
+use cursive::Printer;
+use cursive::views::{Canvas, Dialog, OnEventView, SelectView};
+use cursive::view::Boxable;
+use cursive::theme::ColorStyle;
+use rtypist::parse_file;
+use rtypist::ItemKind;
+use std::process;
 
 fn main() {
     let mut siv = Cursive::new();
@@ -42,21 +47,48 @@ fn main() {
     );
 
 
-    let parsed = parser::parse("./lessons/q.typ");
-    let mut writer = BufWriter::new(io::stdout());
-    for command in parsed {
-        writeln!(writer, "{:?}", command).unwrap();
-    }
-    // let tokenized = parser::tokenize(cleaned_lines);
     siv.run();
 }
 
 fn start_lesson(siv: &mut Cursive, lesson: &str) {
+    let lesson_path = format!("./lessons/{}.lesson", lesson);
+    let commands = parse_file(lesson_path);
+
+    // let mut writer = BufWriter::new(io::stdout());
+    eprintln!("{:?}", &commands);
+    // for command in &commands {
+    //     eprintln!("{:?}", command);
+    // }
+    let mut commands = commands.into_iter();
     siv.pop_layer();
-    let text = format!("You selected {}!", lesson);
-    siv.add_layer(
-        Dialog::around(TextView::new(text)).button("Quit", |s| s.quit()),
-    );
+    while let Some(command) = commands.next() {
+        match command {
+            ItemKind::Banner(text) => {
+                siv.add_fullscreen_layer(
+                    BannerView::new(text.to_owned()).full_width()
+                )
+            },
+            command => println!("command: {:?}", command)
+        }
+    }
+}
+
+struct BannerView {
+    text: String
+}
+
+impl BannerView {
+    fn new(text: String) -> Self {
+        BannerView {
+            text: text
+        }
+    }
+}
+
+impl View for BannerView {
+    fn draw(&self, printer: &Printer) {
+        printer.print((0, 0), &self.text);
+    }
 }
 
 fn lesson_dir() -> WalkDir {
