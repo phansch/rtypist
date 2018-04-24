@@ -54,7 +54,7 @@ fn start_lesson(siv: &mut Cursive, lesson: &str) {
     let lesson_path = format!("./lessons/{}.lesson", lesson);
     let commands = parse_file(lesson_path);
 
-    let mut writer = BufWriter::new(io::stdout());
+    // let mut writer = BufWriter::new(io::stdout());
     eprintln!("{:?}", &commands);
     // for command in &commands {
     //     eprintln!("{:?}", command);
