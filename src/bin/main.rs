@@ -61,7 +61,7 @@ fn start_lesson(siv: &mut Cursive, lesson: &str) {
     // }
     let mut commands = commands.into_iter();
     siv.pop_layer();
-    while let Some(command) = &commands.next() {
+    while let Some(command) = commands.next() {
         match command {
             ItemKind::Banner(text) => {
                 siv.add_fullscreen_layer(
