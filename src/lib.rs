@@ -65,7 +65,7 @@ named!(exit<&str, ItemKind>,
 named!(emptyline<&str, ItemKind>,
     do_parse!(
         space0                   >>
-        value: take_until_and_consume!("\n") >>
+        _value: take_until_and_consume!("\n") >>
         (ItemKind::Empty)
     )
 );
@@ -96,7 +96,7 @@ pub fn parse_str(input: &str) -> Result<Vec<ItemKind>, String> {
 pub fn parse_file(filename: String) -> Vec<ItemKind> {
     let f = File::open(&filename).expect(&format!("File does not exist: {}", &filename));
     let mut string = String::new();
-    BufReader::new(&f).read_to_string(&mut string);
+    BufReader::new(&f).read_to_string(&mut string).unwrap();
     parse_str(&string).unwrap()
 }
 
